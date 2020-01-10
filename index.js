@@ -102,6 +102,7 @@ class Markdown {
         [undefined]: self => (endTextSpan(), undefined),
         '_': self => self.italicUnderscoreTextSpan,
         '*': self => self.italicAsteriskTextSpan,
+        '`': self => self.codeTextSpan,
         '\n': {
           '\n': self => (addBlock(), span = undefined, self.block),
           default: self => (endTextSpan(), self.block)
@@ -147,6 +148,10 @@ class Markdown {
       boldAsteriskNonEmptyMaybeEndTextSpan: {
         '*': self => (endBoldTextSpan(), self.span),
         fallback: (self, token) => (appendBoldTextSpan('*'), appendBoldTextSpan(token), self.boldAsteriskNonEmptyTextSpan)
+      },
+      codeTextSpan: {
+        '`': self => (endCodeTextSpan(), self.span),
+        fallback: (self, token) => (appendCodeTextSpan(token), self.codeTextSpan)
       },
       default: self => self.block
     };
@@ -218,6 +223,15 @@ class Markdown {
       span.text += token;
     }
 
+    function appendCodeTextSpan(token) {
+      if (!span || span.type !== 'code') {
+        span = { type: 'code', text: '' };
+        block.spans.push(span);
+      }
+
+      span.text += token;
+    }
+
     function endTextSpan() {
       span = undefined;
 
@@ -232,6 +246,10 @@ class Markdown {
     }
 
     function endBoldTextSpan() {
+      span = undefined;
+    }
+
+    function endCodeTextSpan() {
       span = undefined;
     }
 

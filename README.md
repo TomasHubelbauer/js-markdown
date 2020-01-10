@@ -26,8 +26,6 @@ still quote
 not quote
 ```
 
-### Implement parsing inline code spans
-
 ### Implement parsing fenced code blocks
 
 ### Store cursor position on the block and span objects
