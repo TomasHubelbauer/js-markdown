@@ -14,3 +14,25 @@ This readme also serves as a test document.
 ## Running
 
 `npx serve .`
+
+## To-Do
+
+### Implement continuing quote blocks without the subsequent block markers
+
+```md
+> quote
+still quote
+
+not quote
+```
+
+### Implement parsing bold and italic spans
+
+### Implement parsing inline code spans
+
+### Implement parsing fenced code blocks
+
+### Store cursor position on the block and span objects
+
+This way altering a document can be made by either parsing it, altering it and
+the serializing it or by parsing it and patching it at the desired position.

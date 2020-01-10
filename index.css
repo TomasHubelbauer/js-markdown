@@ -1,15 +1,15 @@
+body {
+  font: icon;
+}
+
 textarea {
   height: 250px;
   width: 100%;
 }
 
-summary {
-  font-family: monospace;
-}
-
 summary::before {
   color: silver;
-  content: 'block ';
+  content: 'block';
   display: 'inline';
 }
 
@@ -19,12 +19,34 @@ ul {
   padding: 0 0 0 2em;
 }
 
-li {
-  font-family: monospace;
-}
-
 li::before {
   color: silver;
   content: 'span ';
   display: inline;
+}
+
+span.key {
+  color: gray;
+}
+
+span.key::before {
+  content: ' ';
+  display: inline;
+}
+
+span.key::after {
+  content: ': ';
+  display: inline;
+}
+
+span.value {
+  /* font-family: monospace; */
+}
+
+span.value.string {
+  color: maroon;
+}
+
+span.value.number {
+  color: blue;
 }

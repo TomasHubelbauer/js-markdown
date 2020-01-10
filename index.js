@@ -18,6 +18,28 @@ window.addEventListener('load', async () => {
     }
   }
 
+  function* renderObject(object) {
+    for (const key in object) {
+      const keySpan = document.createElement('span');
+      keySpan.className = 'key';
+      keySpan.textContent = key;
+      yield keySpan;
+
+      const value = object[key];
+      const valueSpan = document.createElement('span');
+      valueSpan.className = 'value';
+      if (typeof value === 'string') {
+        valueSpan.className += ' string';
+      }
+      else if (typeof value === 'number') {
+        valueSpan.className += ' number';
+      }
+
+      valueSpan.textContent = value;
+      yield valueSpan;
+    }
+  }
+
   const sourceTextArea = document.getElementById('sourceTextArea');
   const astDiv = document.getElementById('astDiv');
   sourceTextArea.addEventListener('input', () => {
@@ -28,12 +50,12 @@ window.addEventListener('load', async () => {
       const blockDetails = document.createElement('details');
       blockDetails.open = true;
       const blockSummary = document.createElement('summary');
-      blockSummary.textContent = JSON.stringify(rest);
+      blockSummary.append(...renderObject(rest));
       blockDetails.append(blockSummary);
       const spansUl = document.createElement('ul');
       for (const span of spans) {
         const spanLi = document.createElement('li');
-        spanLi.textContent = JSON.stringify(span);
+        spanLi.append(...renderObject(span));
         spansUl.append(spanLi);
       }
 
