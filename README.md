@@ -46,3 +46,10 @@ The simplest might be just setting `name` on the resulting function, or setting
 a symbol or something on it and the generator function which will be used to
 determine if the generated function came from the generator function at the
 current key of the `syntax` object being scanned in `nameSyntax`.
+
+### Fix empty italics parsing as bold
+
+`__` is empty italics, bold it when `__` is not followed by a space.
+Same for the asterisk variants.
+
+### Fix empty code span not appearing at all in the output

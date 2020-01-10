@@ -43,6 +43,18 @@ span.value {
   /* font-family: monospace; */
 }
 
+span.value.empty::after {
+  color: gray;
+  content: '(empty)';
+  display: inline;
+}
+
+span.value.space::after {
+  color: gray;
+  content: '(space)';
+  display: inline;
+}
+
 span.value.string {
   color: maroon;
 }

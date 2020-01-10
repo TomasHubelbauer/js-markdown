@@ -32,13 +32,26 @@ window.addEventListener('load', async () => {
       const valueSpan = document.createElement('span');
       valueSpan.className = 'value';
       if (typeof value === 'string') {
-        valueSpan.className += ' string';
+        if (value === '') {
+          valueSpan.className += ' empty';
+        }
+        if (value === ' ') {
+          valueSpan.className += ' space';
+        }
+        else {
+          valueSpan.className += ' string';
+        }
+
+        valueSpan.textContent = JSON.stringify(value).slice(1, -1);
       }
       else if (typeof value === 'number') {
         valueSpan.className += ' number';
+        valueSpan.textContent = value;
+      }
+      else {
+        valueSpan.textContent = JSON.stringify(value);
       }
 
-      valueSpan.textContent = value;
       yield valueSpan;
     }
   }
