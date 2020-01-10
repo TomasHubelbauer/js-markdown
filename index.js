@@ -61,6 +61,10 @@ class Markdown {
           ' ': self => (addHeaderBlock(1), self.span),
           '#': {
             ' ': self => (addHeaderBlock(2), self.span),
+            '#': {
+              ' ': self => (addHeaderBlock(3), self.span),
+              default: self => (appendTextSpan('###'), self.span),
+            },
             default: self => (appendTextSpan('##'), self.span),
           },
           default: self => (appendTextSpan('#'), self.span),
