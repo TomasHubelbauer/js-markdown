@@ -39,3 +39,10 @@ the serializing it or by parsing it and patching it at the desired position.
 
 Probably need to generalize the bold and italic functions into one which takes
 the special character as a parameter?
+
+If we make the functions in `syntax` parametric, it will break equality checks
+in `nameSyntax`, so we need to create a fallback for that.
+The simplest might be just setting `name` on the resulting function, or setting
+a symbol or something on it and the generator function which will be used to
+determine if the generated function came from the generator function at the
+current key of the `syntax` object being scanned in `nameSyntax`.
