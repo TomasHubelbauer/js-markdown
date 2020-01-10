@@ -2,3 +2,29 @@ textarea {
   height: 250px;
   width: 100%;
 }
+
+summary {
+  font-family: monospace;
+}
+
+summary::before {
+  color: silver;
+  content: 'block ';
+  display: 'inline';
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 0 0 2em;
+}
+
+li {
+  font-family: monospace;
+}
+
+li::before {
+  color: silver;
+  content: 'span ';
+  display: inline;
+}
