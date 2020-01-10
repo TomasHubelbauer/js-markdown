@@ -5,11 +5,14 @@ window.addEventListener('load', async () => {
     '#NotHeader': [{ spans: [{ text: '#NotHeader' }] }],
     '# Header': [{ type: 'header', level: 1, spans: [{ text: 'Header' }] }],
     '> quote\nstill quote\n\nnot quote': [{ type: 'quote', spans: [{ text: ' quote still quote' }] }, { spans: [{ text: 'not quote' }] }],
+    'Hi _hi_ hi *hi*': [{ spans: [{ text: 'Hi ' }, { type: 'italic', text: 'hi' }, { text: ' hi ' }, { type: 'italic', text: 'hi' }] }],
+    'Hi __h _ i__ hi **h * i**': [{ spans: [{ text: 'Hi ' }, { type: 'bold', text: 'h _ i' }, { text: ' hi ' }, { type: 'bold', text: 'h * i' }] }],
   };
 
   for (const test in tests) {
     console.groupCollapsed(JSON.stringify(test));
     const result = new Markdown(test, console.log).blocks;
+    console.log(result);
     console.groupEnd();
     if (JSON.stringify(result) !== JSON.stringify(tests[test])) {
       console.log(JSON.stringify(tests[test], null, 2));
@@ -97,11 +100,53 @@ class Markdown {
       span: self => self.textSpan,
       textSpan: {
         [undefined]: self => (endTextSpan(), undefined),
+        '_': self => self.italicUnderscoreTextSpan,
+        '*': self => self.italicAsteriskTextSpan,
         '\n': {
           '\n': self => (addBlock(), span = undefined, self.block),
           default: self => (endTextSpan(), self.block)
         },
         fallback: (self, token) => (appendTextSpan(token), self.textSpan)
+      },
+      italicUnderscoreTextSpan: {
+        '_': self => self.boldUnderscoreTextSpan,
+        fallback: (self, token) => (appendItalicTextSpan(token), self.italicUnderscoreNonEmptyTextSpan)
+      },
+      italicUnderscoreNonEmptyTextSpan: {
+        '_': self => (endItalicTextSpan(), self.span),
+        fallback: (self, token) => (appendItalicTextSpan(token), self.italicUnderscoreNonEmptyTextSpan)
+      },
+      italicAsteriskTextSpan: {
+        '*': self => self.boldAsteriskTextSpan,
+        fallback: (self, token) => (appendItalicTextSpan(token), self.italicAsteriskNonEmptyTextSpan)
+      },
+      italicAsteriskNonEmptyTextSpan: {
+        '*': self => (endItalicTextSpan(), self.span),
+        fallback: (self, token) => (appendItalicTextSpan(token), self.italicAsteriskNonEmptyTextSpan)
+      },
+      boldUnderscoreTextSpan: {
+        '_': self => self.boldUnderscoreNonEmptyTextSpan,
+        fallback: (self, token) => (appendBoldTextSpan(token), self.boldUnderscoreNonEmptyTextSpan)
+      },
+      boldUnderscoreNonEmptyTextSpan: {
+        '_': self => self.boldUnderscoreNonEmptyMaybeEndTextSpan,
+        fallback: (self, token) => (appendBoldTextSpan(token), self.boldUnderscoreNonEmptyTextSpan)
+      },
+      boldUnderscoreNonEmptyMaybeEndTextSpan: {
+        '_': self => (endBoldTextSpan(), self.span),
+        fallback: (self, token) => (appendBoldTextSpan('_'), appendBoldTextSpan(token), self.boldUnderscoreNonEmptyTextSpan)
+      },
+      boldAsteriskTextSpan: {
+        '*': self => self.boldAsteriskNonEmptyTextSpan,
+        fallback: (self, token) => (appendBoldTextSpan(token), self.boldAsteriskNonEmptyTextSpan)
+      },
+      boldAsteriskNonEmptyTextSpan: {
+        '*': self => self.boldAsteriskNonEmptyMaybeEndTextSpan,
+        fallback: (self, token) => (appendBoldTextSpan(token), self.boldAsteriskNonEmptyTextSpan)
+      },
+      boldAsteriskNonEmptyMaybeEndTextSpan: {
+        '*': self => (endBoldTextSpan(), self.span),
+        fallback: (self, token) => (appendBoldTextSpan('*'), appendBoldTextSpan(token), self.boldAsteriskNonEmptyTextSpan)
       },
       default: self => self.block
     };
@@ -138,7 +183,7 @@ class Markdown {
     function appendTextSpan(token) {
       if (!span) {
         // Revive the last text span after a line break
-        if (block && block.spans[block.spans.length - 1]) {
+        if (block && block.spans[block.spans.length - 1] && !block.spans[block.spans.length - 1].type) {
           span = block.spans[block.spans.length - 1];
           span.text += ' ';
         }
@@ -155,6 +200,24 @@ class Markdown {
       span.text += token;
     }
 
+    function appendItalicTextSpan(token) {
+      if (!span || span.type !== 'italic') {
+        span = { type: 'italic', text: '' };
+        block.spans.push(span);
+      }
+
+      span.text += token;
+    }
+
+    function appendBoldTextSpan(token) {
+      if (!span || span.type !== 'bold') {
+        span = { type: 'bold', text: '' };
+        block.spans.push(span);
+      }
+
+      span.text += token;
+    }
+
     function endTextSpan() {
       span = undefined;
 
@@ -162,6 +225,14 @@ class Markdown {
       if (block.type === 'header') {
         block = undefined;
       }
+    }
+
+    function endItalicTextSpan() {
+      span = undefined;
+    }
+
+    function endBoldTextSpan() {
+      span = undefined;
     }
 
     function nameSyntax(syntax) {
@@ -213,6 +284,10 @@ class Markdown {
       // Resolve a chain of methods to the final object
       while (typeof syntax === 'function') {
         syntax = syntax(_syntax);
+      }
+
+      if (syntax === undefined && token !== undefined) {
+        throw new Error('Transition to nowhere!');
       }
     }
 

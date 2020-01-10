@@ -26,8 +26,6 @@ still quote
 not quote
 ```
 
-### Implement parsing bold and italic spans
-
 ### Implement parsing inline code spans
 
 ### Implement parsing fenced code blocks
@@ -36,3 +34,5 @@ not quote
 
 This way altering a document can be made by either parsing it, altering it and
 the serializing it or by parsing it and patching it at the desired position.
+
+### Select the block/span region in the text area when hovered over in the list
