@@ -36,3 +36,8 @@ This way altering a document can be made by either parsing it, altering it and
 the serializing it or by parsing it and patching it at the desired position.
 
 ### Select the block/span region in the text area when hovered over in the list
+
+### Implement parsing italic nested in bold and bold nested in italic
+
+Probably need to generalize the bold and italic functions into one which takes
+the special character as a parameter?
